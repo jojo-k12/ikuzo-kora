@@ -152,7 +152,26 @@ def process_logo():
     save_rgba(rgb, al, "logo_full.png")
 
 
+AURA_PAD = 140
+
+
+def process_auras():
+    """Pre-bake dilated + blurred white silhouettes for the Heat Mode aura,
+    so the browser only has to animate the flame displacement."""
+    for name in ("jojo", "sevas"):
+        a = np.asarray(Image.open(OUT / f"{name}.png"))[..., 3]
+        a = np.pad(a, AURA_PAD)
+        for suffix, radius, blur in (("aura", 26, 16), ("rim", 8, 5)):
+            k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (radius * 2 + 1, radius * 2 + 1))
+            m = cv2.dilate(a, k)
+            m = cv2.GaussianBlur(m, (0, 0), blur)
+            white = np.full(m.shape + (3,), 255, np.uint8)
+            Image.fromarray(np.dstack([white, m]), "RGBA").save(OUT / f"{name}_{suffix}.png")
+            print(f"{name}_{suffix}.png pad={AURA_PAD}")
+
+
 if __name__ == "__main__":
     process_render()
     process_logo()
+    process_auras()
     (OUT / "layout.json").write_text(json.dumps(BBOXES, indent=2))

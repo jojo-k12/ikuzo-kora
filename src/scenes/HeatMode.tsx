@@ -119,7 +119,7 @@ const Embers: React.FC<{side: Side; x0: number; x1: number}> = ({side, x0, x1}) 
   );
 };
 
-const KanjiFlicker: React.FC = () => {
+export const KanjiFlicker: React.FC = () => {
   const frame = useCurrentFrame();
   const k = Math.floor(frame / 3);
   const chars = Array.from(FLICKER_KANJI);

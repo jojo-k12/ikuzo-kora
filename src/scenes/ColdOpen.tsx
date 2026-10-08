@@ -6,28 +6,28 @@ import {clamp, Flash, shake, shakeTransform} from '../fx';
 import {C} from '../theme';
 import {CREST_SIZE, CrestArt} from './Crest';
 
-// Local frames (scene is 90 frames = 1.5s).
-const CREST_IN = 16;
-const CRACK = 54;
-const SHATTER = 64;
+// Default local frames (intro version: 90 frames = 1.5s).
+export type ColdOpenTiming = {crestIn: number; crack: number; shatter: number; smokeSpread: number};
+const INTRO_TIMING: ColdOpenTiming = {crestIn: 16, crack: 54, shatter: 64, smokeSpread: 18};
 
-const COLS = SMOKE_COLUMNS.map((text, i) => {
+const makeCols = (spread: number) => SMOKE_COLUMNS.map((text, i) => {
   const x = 120 + i * 240 + (random(`cx${i}`) - 0.5) * 60;
   return {
     text,
     x,
     top: 120 + random(`ct${i}`) * 260,
     size: 46 + random(`cs${i}`) * 26,
-    delay: Math.floor(random(`cd${i}`) * 18),
+    delay: Math.floor(random(`cd${i}`) * spread),
     color: i % 3 === 0 ? C.teal : i % 3 === 1 ? C.silver : C.magenta,
   };
 });
 
-const SmokeKanji: React.FC = () => {
+const SmokeKanji: React.FC<{spread: number}> = ({spread}) => {
   const frame = useCurrentFrame();
+  const cols = makeCols(spread);
   return (
     <AbsoluteFill>
-      {COLS.map((col, ci) =>
+      {cols.map((col, ci) =>
         Array.from(col.text).map((ch, j) => {
           const appear = col.delay + j * 3;
           const t = frame - appear;
@@ -106,8 +106,9 @@ const CRACKS = Array.from({length: 7}, (_, i) => {
   return pts;
 });
 
-export const ColdOpen: React.FC = () => {
+export const ColdOpen: React.FC<{timing?: ColdOpenTiming}> = ({timing = INTRO_TIMING}) => {
   const frame = useCurrentFrame();
+  const {crestIn: CREST_IN, crack: CRACK, shatter: SHATTER, smokeSpread} = timing;
   const appear = interpolate(frame, [CREST_IN, CREST_IN + 12], [0, 1], {
     ...clamp,
     easing: Easing.out(Easing.back(1.6)),
@@ -136,7 +137,7 @@ export const ColdOpen: React.FC = () => {
 
   return (
     <AbsoluteFill style={{background: '#000'}}>
-      <SmokeKanji />
+      <SmokeKanji spread={smokeSpread} />
       <AbsoluteFill style={{transform: shakeTransform(s)}}>
         {frame >= CREST_IN && t < 0 ? (
           <div

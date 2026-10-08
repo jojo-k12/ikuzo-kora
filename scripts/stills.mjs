@@ -6,11 +6,12 @@ import {renderStill, selectComposition, openBrowser} from '@remotion/renderer';
 import fs from 'node:fs';
 import path from 'node:path';
 const [outDir, ...frames] = process.argv.slice(2);
+const id = process.env.COMP ?? 'KitschIntro';
 fs.mkdirSync(outDir, {recursive: true});
 const serveUrl = await bundle({entryPoint: path.resolve('src/index.ts')});
 const browserExecutable = process.env.REMOTION_BROWSER ?? null;
 const puppeteerInstance = await openBrowser('chrome', {browserExecutable});
-const composition = await selectComposition({serveUrl, id: 'KitschIntro', puppeteerInstance});
+const composition = await selectComposition({serveUrl, id, puppeteerInstance});
 for (const f of frames) {
   const output = path.join(outDir, `f${String(f).padStart(3, '0')}.png`);
   await renderStill({composition, serveUrl, frame: Number(f), output, puppeteerInstance, scale: 0.5});

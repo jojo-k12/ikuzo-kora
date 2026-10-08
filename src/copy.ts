@@ -42,3 +42,22 @@ export const ALL_JP_TEXT = [
 ].join('');
 
 export const NEON_WORD = 'sixties';
+
+// --- Montage remake ("6ties kitsch 5") ---
+export const MONTAGE = {
+  goal: 'ゴール!!',
+  goAhead: '勝ち越し',
+  hexDecoded: 'LOOK AT WHAT IT DID TO ME',
+  heatAction: {label: 'HEAT ACTION', labelJP: 'ヒートアクション', name: 'ESSENCE OF THE HIT-AND-RUN'},
+  styles: [
+    {name: 'BRAWLER', jp: 'チンピラ'},
+    {name: 'RUSH', jp: 'ラッシュ'},
+    {name: 'BEAST', jp: '壊し屋'},
+  ],
+  substory: {labelJP: 'サブストーリー', number: 'SUBSTORY 06', title: 'How Are We Not Dead?', complete: 'COMPLETE', stamp: '完'},
+  heat: {big: '熱', label: 'HEAT MODE'},
+  legendJP: 'そして、伝説へ。',
+  legendEN: 'AND SO, INTO LEGEND.',
+  // Kanji stamped on cuts: 闇 dark, 蹴 kick, 夜 night, 銃 gun, 怨 grudge, 龍 dragon, 影 shadow, 謎 mystery, 血 blood, 変 change, 勝 victory
+  stamps: '闇蹴夜銃怨龍影謎血変勝',
+};

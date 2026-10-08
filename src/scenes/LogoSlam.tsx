@@ -36,10 +36,14 @@ const place = (b: {x: number; y: number; w: number; h: number}): React.CSSProper
   height: b.h,
 });
 
+/** Frames between letters when the sign powers off (last letter first). */
+export const POWER_OFF_STEP = 4;
+
 /** Is letter i lit at local frame f? Flickers on like a neon tube, with one bad letter. */
-const letterOn = (i: number, f: number) => {
+const letterOn = (i: number, f: number, powerOff?: number) => {
   const t = f - (LS.TYPE + i * LS.TYPE_STEP);
   if (t < 0) return false;
+  if (powerOff !== undefined && f >= powerOff + (WORD.length - 1 - i) * POWER_OFF_STEP) return false;
   if (t < 7) return [1, 1, 0, 0, 1, 0, 1][t] === 1;
   // Whole-sign stutter.
   if (f === 70 || f === 71) return false;
@@ -59,9 +63,9 @@ const hop = (f: number, start: number) => {
   return {y: 0, sx: 1.1, sy: 0.88}; // landing squash
 };
 
-const NeonWord: React.FC = () => {
+const NeonWord: React.FC<{powerOff?: number}> = ({powerOff}) => {
   const frame = useCurrentFrame();
-  const lit = Array.from(WORD).filter((_, i) => letterOn(i, frame)).length;
+  const lit = Array.from(WORD).filter((_, i) => letterOn(i, frame, powerOff)).length;
   const hum = 0.92 + random(`hum${frame}`) * 0.08;
   return (
     <div
@@ -96,7 +100,7 @@ const NeonWord: React.FC = () => {
         }}
       >
         {Array.from(WORD).map((ch, i) => {
-          const on = letterOn(i, frame);
+          const on = letterOn(i, frame, powerOff);
           const typed = frame >= LS.TYPE + i * LS.TYPE_STEP;
           return (
             <span
@@ -120,8 +124,16 @@ const NeonWord: React.FC = () => {
   );
 };
 
-export const LogoSlam: React.FC = () => {
+/**
+ * powerOff: optional local frame where the neon sign switches off letter by
+ * letter, after which the whole logo fades to black.
+ */
+export const LogoSlam: React.FC<{powerOff?: number}> = ({powerOff}) => {
   const frame = useCurrentFrame();
+  const fadeOut =
+    powerOff === undefined
+      ? 1
+      : interpolate(frame, [powerOff + WORD.length * POWER_OFF_STEP + 6, powerOff + WORD.length * POWER_OFF_STEP + 50], [1, 0], clamp);
   const {DROP, IMPACT} = LS;
   const drop = interpolate(frame, [DROP, IMPACT], [2.8, 1], {...clamp, easing: Easing.in(Easing.cubic)});
   const settle = frame >= IMPACT ? 1 + Math.sin((frame - IMPACT) * 0.8) * Math.exp(-(frame - IMPACT) * 0.3) * 0.03 : 0;
@@ -162,7 +174,7 @@ export const LogoSlam: React.FC = () => {
           {/* soft spotlight so the black elements separate from the void */}
           <AbsoluteFill
             style={{
-              opacity: interpolate(frame, [IMPACT, IMPACT + 8], [0, 1], clamp),
+              opacity: interpolate(frame, [IMPACT, IMPACT + 8], [0, 1], clamp) * fadeOut,
               background: 'radial-gradient(ellipse 55% 60% at 50% 55%, #24232b 0%, #0b0b0e 60%, #000 100%)',
             }}
           />
@@ -179,10 +191,10 @@ export const LogoSlam: React.FC = () => {
                 height: LOGO.full.h,
                 transform: `scale(${scale})`,
                 transformOrigin: '0 0',
-                opacity: o,
+                opacity: o * fadeOut,
               }}
             >
-              <NeonWord />
+              <NeonWord powerOff={powerOff} />
               <Img
                 src={IMG.catBlack}
                 style={{

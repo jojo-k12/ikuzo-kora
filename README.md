@@ -12,12 +12,23 @@ styled after Yakuza's opening and boss-fight intro cards.
 | 7.5–10s | Heat Mode | Both fighters in blue / pink flame auras, embers, speed lines, kanji flicker, HEAT gauge to MAX |
 | 10–12s | Logo slam | KITSCH. slams with shockwave rings, "sixties" flickers on as a neon sign, the cats hop and the white cat blinks |
 
+## Montage remake (`KitschMontage`, 28.4s)
+
+A remake of the "6ties kitsch 5" montage (`public/raw/montage_src.mp4`), using the original
+footage and audio. It adds the cold open over the black lead-in, cut impacts (punch-zoom, shake,
+RGB split, flash), kanji stamps on cuts, a hex message decode, ゴール!! / 勝ち越し on the goal,
+a heat action banner on the car hit, Yakuza 0 style-switch callouts synced to the outfit
+changes, a SUBSTORY card for "how are we not dead", Heat Mode on the drop, a letterboxed
+"そして、伝説へ。" flyover, and the logo slam ending with the neon sign switching off.
+Timings are in `src/montage/timeline.ts`.
+
 ## Commands
 
 ```bash
 npm install
 npm run studio        # live preview / scrub timeline
 npm run render        # -> out/intro.mp4 (H.264, CRF 16, AAC)
+npm run render:montage  # -> out/montage.mp4
 ```
 
 If Remotion can't download its own headless Chrome, point it at a local one:
@@ -44,6 +55,6 @@ need these scripts if you change the inputs.
 - `scripts/fetch_fonts.py`: downloads the Google Fonts (OFL) into `public/fonts/`.
   The Japanese fonts are subset to the glyphs in `src/copy.ts`, **so re-run it after
   changing any Japanese text**.
-- `scripts/stills.mjs`: renders half-res preview PNGs of chosen frames.
+- `scripts/stills.mjs`: renders half-res preview PNGs of chosen frames (`COMP=KitschMontage` for the montage).
 
 Fonts: Anton, Bebas Neue, Yellowtail, Yuji Boku, Noto Serif JP, Dela Gothic One.

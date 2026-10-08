@@ -6,6 +6,7 @@
   "scripts": {
     "studio": "remotion studio",
     "render": "remotion render KitschIntro out/intro.mp4",
+    "render:montage": "remotion render KitschMontage out/montage.mp4",
     "still": "remotion still KitschIntro out/still.png",
     "typecheck": "tsc --noEmit",
     "assets": "python3 scripts/process_assets.py",

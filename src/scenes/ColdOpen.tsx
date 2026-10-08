@@ -122,6 +122,9 @@ export const ColdOpen: React.FC = () => {
     50 * glow
   }px ${C.teal}) drop-shadow(24px 0 ${50 * glow}px ${C.magenta})`;
 
+  // Lighter glow for the flying shards: blurs here cover the whole frame.
+  const shardGlow = `drop-shadow(0 0 8px rgba(255,255,255,0.8)) drop-shadow(0 0 24px ${C.magenta})`;
+
   const D = CREST_SIZE;
   const crestBox: React.CSSProperties = {
     position: 'absolute',
@@ -161,8 +164,10 @@ export const ColdOpen: React.FC = () => {
             ) : null}
           </div>
         ) : null}
-        {t >= 0
-          ? SHARDS.map((sh, i) => {
+        {t >= 0 ? (
+          // One glow pass over all shards (a filter per shard is ~30x slower).
+          <AbsoluteFill style={{filter: shardGlow}}>
+            {SHARDS.map((sh, i) => {
               const dist = sh.speed * t + t * t * 0.35;
               const o = interpolate(t, [4, 24], [1, 0], clamp);
               return (
@@ -172,7 +177,6 @@ export const ColdOpen: React.FC = () => {
                     ...crestBox,
                     clipPath: sh.clip,
                     opacity: o,
-                    filter: glowFilter,
                     transformOrigin: `${50 + Math.cos(sh.mid) * (sh.r === 1 ? 45 : 15)}% ${
                       50 + Math.sin(sh.mid) * (sh.r === 1 ? 45 : 15)
                     }%`,
@@ -184,8 +188,9 @@ export const ColdOpen: React.FC = () => {
                   <CrestArt />
                 </div>
               );
-            })
-          : null}
+            })}
+          </AbsoluteFill>
+        ) : null}
       </AbsoluteFill>
       <Flash at={SHATTER} dur={8} peak={0.85} />
     </AbsoluteFill>
